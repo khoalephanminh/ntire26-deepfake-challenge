@@ -1,0 +1,25 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE files (VS Code, etc.)
+.vscode/
+
+# Project-specific large data and outputs
+models/
+pretrained_weights/
+datasets/
+draft_datasets/
+draft_submissions/
+submissions/
+gfpgan/
+misc/
+
+*.pth
+
+echo "training/pretrained/" >> .gitignore
+echo "*.tar" >> .gitignore
