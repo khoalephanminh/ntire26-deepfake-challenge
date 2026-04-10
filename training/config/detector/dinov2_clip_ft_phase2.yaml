@@ -1,0 +1,167 @@
+# log dir 
+log_dir: logs/evaluations/effnb4
+
+model_name: fsbi   # model name
+backbone_name: dinov2_clip_fusion  # backbone name
+# finetune_path: path_to_phase1/ckpt_best.pth #finetune phase1
+
+
+backbone_config:
+  num_classes: 2
+  inc: 3
+  dropout: false
+  model_name: models/dinov2-giant
+  clip_model_name: models/clip-vit-large-patch14
+  
+  # KEEP PEFT TRUE SO THE 9248 WEIGHTS LOAD PROPERLY
+  peft: true 
+  target_modules: ["query", "key", "value", "dense"]
+  lora_r: 32
+  lora_alpha: 64
+  lora_dropout: 0.15
+  
+  # THE PHASE 1 PROTECTIONS
+  freeze_backbone: true
+  freeze_lora: false      # <--- Locks the LoRA weights for phase 1, unlock for phase 2 (false)
+
+# dataset
+all_dataset: [FaceForensics++, FF-F2F, FF-DF, FF-FS, FF-NT, FaceShifter, DeepFakeDetection, Celeb-DF-v1, Celeb-DF-v2, DFDCP, DFDC, DeeperForensics-1.0, UADFV]
+test_dataset: [ntire_train]
+
+# --- THE 50/50 MIX INJECTION ---
+# We include the base datasets, and repeat ntire_train 5 times. 
+# 1k NTIRE x 5 = 5,000 NTIRE frames. 
+# The base datasets will be squashed to ~5,000 frames by the drop rates below.
+# Total Epoch Size = ~10,000 frames (Perfect 50/50 split!)
+train_dataset: [
+  Celeb-DF-v3, DeeperForensics-1.0, HIDF, RedFace_filtered,   
+  DF40_all_filtered, DDL, FaceForensics++, Celeb-DF-v2, DeepFakeDetection, DFDC, DFDCP, FFIW, FaceShifter, UADFV, 
+]
+
+# 10k each
+stochastic_drop_rate:
+  # The Giants (Scale down to prevent drowning out the smaller sets)
+  DF40_all_filtered: {0: 0.93, 1: 0.9} #10k                 
+  DDL: {0: 0.98, 1: 0.978}             #10k                
+  HIDF: {0: 0.857, 1: 0.833}           #10k                      
+  Celeb-DF-v3: {0: 0.0, 1: 0.87}       #7k     
+  RedFace_filtered: {0: 0.0, 1: 0.82}  #7k
+  DeeperForensics-1.0: {0: 0.9, 1: 0.896} #8k
+
+
+compression: c23  # compression-level for videos
+train_batchSize: 32   # training batch size
+test_batchSize: 16   # test batch size
+workers: 16   # number of data loading workers
+frame_num: {'train': 8, 'test': 1}   # number of frames to use per video in training and testing
+# --- NEW: Dynamic Intra-Dataset Frame Capping ---
+# Format: {Dataset_Name: {label_idx: max_frames}} (0 is Real, 1 is Fake)
+dynamic_frame_cap:
+  DeeperForensics-1.0: {0: 2}
+  FaceForensics++: {1: 2}
+  DFDCP: {1: 2}
+  DeepFakeDetection: {1: 1}
+  Celeb-DF-v2: {1: 1}
+  Celeb-DF-v3: {1: 1}
+
+resolution: 224   # resolution of output image to network
+
+with_mask: false   # whether to include mask information in the input
+with_landmark: false   # whether to include facial landmark information in the input
+save_ckpt: true   # whether to save checkpoint
+save_feat: true   # whether to save features
+
+# --- STRATEGY: HARDWARE & OPTIMIZATION ---
+accumulation_steps: 8       # <--- NEW: Effective Batch Size = 32(GPU) * 2(GPUs) * 4(Steps) = 256
+use_decoupled_sampler: false # <--- NEW: Activates the 50/50 Temperature Sampler
+step_lr_per_iter: true      # <--- NEW: Forces the scheduler to step every iteration, not epoch
+
+# data augmentation
+use_data_augmentation: true
+data_aug:
+  # --- ACTIVE (Geometric) ---
+  flip_prob: 0.5
+  rotate_prob: 0.5
+  rotate_limit: [-10, 10]
+
+  # --- DISABLED (Photometric - handled by PDM) ---
+  blur_prob: 0.0
+  blur_limit: [3, 5]              # Valid odd integers (ignored due to 0 prob)
+  
+  color_prob: 0.0                 # Safely disables FancyPCA, HueSaturation, & Brightness
+  brightness_limit: [0.0, 0.0]
+  contrast_limit: [0.0, 0.0]
+  
+  jpeg_prob: 0.0                  # Safely disables Albumentation compression
+  quality_lower: 99               # Valid integers, prevents empty range errors
+  quality_upper: 100
+
+
+# DINO expects (same as imagenet)
+mean: [0.485, 0.456, 0.406]
+std: [0.229, 0.224, 0.225]
+
+# optimizer config
+optimizer:
+  # choose between 'adam' and 'sgd'
+  # type: sam
+  type: adam
+  adam:
+    # lr: 0.0001  # learning rate, this got 9248
+    lr: 0.000001  # finetune from 9248
+    beta1: 0.9  # beta1 for Adam optimizer
+    beta2: 0.999 # beta2 for Adam optimizer
+    eps: 0.00000001  # epsilon for Adam optimizer
+    weight_decay: 0.0005  # weight decay for regularization
+    amsgrad: false
+  sgd:
+    lr: 0.0002  # learning rate
+    momentum: 0.9  # momentum for SGD optimizer
+    weight_decay: 0.0005  # weight decay for regularization
+  sam:
+    lr: 0.001  # learning rate, initailly 0.001
+    momentum: 0.9  # momentum for SGD optimizer
+
+# training config
+# lr_scheduler: null   # learning rate scheduler
+# lr_scheduler: linear
+lr_scheduler: cosine_warmup  # <--- Smoothly introduces the new loss landscape
+# warmup_steps: 25 # this got 9248
+warmup_steps: 50
+nEpochs: 10   # number of epochs to train for
+start_epoch: 0   # manual epoch number (useful for restarts)
+save_epoch: 1   # interval epochs for saving models
+rec_iter: 100   # interval iterations for recording
+logdir: ./logs   # folder to output images and logs
+manualSeed: 1024   # manual seed for random number generation
+save_ckpt: false   # whether to save checkpoint
+
+# loss function
+# loss_func: cross_entropy_weighted   # loss function to use
+# loss_func: cross_entropy   # loss function to use
+loss_func: focal_loss   # loss function to use
+losstype: null
+
+
+# metric
+metric_scoring: auc   # metric for evaluation (auc, acc, eer, ap)
+
+# cuda
+
+cuda: true   # whether to use CUDA acceleration
+cudnn: true   # whether to use CuDNN for convolution operations
+
+
+use_degradation: true
+
+degradation: # this got 9248
+  type: ours
+  global_p: 0.5           # 80% chance the image enters the degradation pipeline
+  val_global_p: 0.0       # Validation images remain 100% clean
+  op_p: 0.3               # 50% chance for EACH of the 14 operations to trigger
+  degradations_strength: 0.8 # Max bound for the dynamic strength scale
+  distractor_p: 0.15      # Lowered to prevent excessive occlusion
+  use_beta: true          # Dynamic, randomized strengths
+  a: 1.2                  # Beta distribution shape parameter
+  b: 1.2                  # Beta distribution shape parameter
+
