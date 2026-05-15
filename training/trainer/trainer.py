@@ -1,7 +1,3 @@
-# author: Zhiyuan Yan
-# email: zhiyuanyan@link.cuhk.edu.cn
-# date: 2023-03-30
-# description: trainer
 import os
 import sys
 current_file_path = os.path.abspath(__file__)

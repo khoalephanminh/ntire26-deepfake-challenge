@@ -2,6 +2,13 @@
 
 This repository contains the inference pipeline and ensemble code for our submission.
 
+## Table of Contents
+1. [Environment Setup](#1-environment-setup)
+2. [Data & Weights Preparation](#2-data--weights-preparation)
+3. [Running the Pipeline](#3-running-the-pipeline)
+4. [Output](#4-output)
+5. [Support](#5-support)
+
 ## 1. Environment Setup
 
 We recommend using Conda to ensure strict reproducibility. 
@@ -32,10 +39,24 @@ chmod +x setup_env.sh
 Before running the evaluation pipeline, ensure your file structure is configured correctly:
 
 1. **Test Dataset:** Place the test images in the `datasets/publictest_data_final` folder.
-2. **Model Weights:** Put our pretrained model weights and place them inside the `pretrained_weights/` directory (we already put it in our zip file):
-   * `dinov2_252.pth`
-   * `dinov2_252_crop.pth`
-   * `dinov2_clip.pth`
+2. **Model Weights:** We host our pretrained model weights on Hugging Face. You must download them into the `pretrained_weights/` directory.
+
+We recommend using the `huggingface-cli` to download the weights efficiently. Run the following commands:
+
+```bash
+pip install -U "huggingface_hub[cli]"
+
+# Download the weights directly into the pretrained_weights folder
+huggingface-cli download lpmkhoa/hcmusaqua-ntire26-weights dinov2_252.pth --local-dir pretrained_weights
+huggingface-cli download lpmkhoa/hcmusaqua-ntire26-weights dinov2_252_crop.pth --local-dir pretrained_weights
+huggingface-cli download lpmkhoa/hcmusaqua-ntire26-weights dinov2_clip.pth --local-dir pretrained_weights
+```
+
+**Required files:**
+
+* `dinov2_252.pth`
+* `dinov2_252_crop.pth`
+* `dinov2_clip.pth`
 
 
 ## 3. Running the Pipeline

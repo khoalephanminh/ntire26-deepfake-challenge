@@ -1,7 +1,3 @@
-# author: Zhiyuan Yan
-# email: zhiyuanyan@link.cuhk.edu.cn
-# description: training code.
-
 import os
 import argparse
 import cv2
