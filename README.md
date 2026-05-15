@@ -13,8 +13,6 @@
 
 > 🏆 **Ranked 4th in the NTIRE 2026 Robust Deepfake Detection Challenge @ CVPR 2026.**
 
-*Note: **HCMUS-Aqua** is our official team name representing the University of Science, VNU-HCM.*
-
 This repository contains the inference pipeline and ensemble code for our submission.
 
 ## Table of Contents
