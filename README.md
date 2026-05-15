@@ -42,7 +42,7 @@ chmod +x setup_env.sh
 Before running the evaluation pipeline, ensure your file structure is configured correctly:
 
 1. **Test Dataset:** Place the test images in the `datasets/publictest_data_final` folder.
-2. **Model Weights:** We host our pretrained model weights on Hugging Face. You must download them into the `pretrained_weights/` directory.
+2. **Model Weights:** We host our pretrained model weights on [Hugging Face](https://huggingface.co/lpmkhoa/hcmusaqua-ntire26-weights). You must download them into the `pretrained_weights/` directory.
 
 We recommend using the `huggingface-cli` to download the weights efficiently. Run the following commands:
 
