@@ -9,5 +9,5 @@ sys.path.append(project_root_dir)
 from metrics.registry import DETECTOR
 from .utils import slowfast
 
-from .fsbi_detector import FSBIDetector
+from .aqua_detector import AquaDetector
 from .vlm_detector import VLMDetector

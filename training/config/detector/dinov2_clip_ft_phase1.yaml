@@ -1,7 +1,7 @@
 # log dir 
 log_dir: logs/evaluations/effnb4
 
-model_name: fsbi   # model name
+model_name: aqua   # model name
 backbone_name: dinov2_clip_fusion  # backbone name
 
 backbone_config:

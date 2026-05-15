@@ -1,31 +1,3 @@
-'''
-# description: Class for the FSBIDetector
-
-Functions in the Class are summarized as:
-1. __init__: Initialization
-2. build_backbone: Backbone-building
-3. build_loss: Loss-function-building
-4. features: Feature-extraction
-5. classifier: Classification
-6. get_losses: Loss-computation
-7. get_train_metrics: Training-metrics-computation
-8. get_test_metrics: Testing-metrics-computation
-9. forward: Forward-propagation
-
-
-Reference:
-@article{article,
-  title = {FSBI: Deepfake detection with frequency enhanced self-blended images},
-  author = {Hasanaath, Ahmed and Luqman, Hamzah and Katib, Raed and Anwar, Saeed},
-  year = {2025},
-  month = {02},
-  pages = {105418},
-  volume = {154},
-  journal = {Image and Vision Computing},
-  doi = {10.1016/j.imavis.2025.105418}
-}
-'''
-
 import os
 import logging
 import datetime
@@ -52,8 +24,8 @@ import inspect
 logger = logging.getLogger(__name__)
 
 
-@DETECTOR.register_module(module_name='fsbi')
-class FSBIDetector(AbstractDetector):
+@DETECTOR.register_module(module_name='aqua')
+class AquaDetector(AbstractDetector):
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -69,14 +41,6 @@ class FSBIDetector(AbstractDetector):
         backbone_class = BACKBONE[config['backbone_name']]
         model_config = config['backbone_config']
         backbone = backbone_class(model_config)
-        ## if donot load the pretrained weights, fail to get good results
-        #state_dict = torch.load(config['pretrained'])
-        #for name, weights in state_dict.items():
-        #    if 'pointwise' in name:
-        #        state_dict[name] = weights.unsqueeze(-1).unsqueeze(-1)
-        #state_dict = {k:v for k, v in state_dict.items() if 'fc' not in k}
-        #backbone.load_state_dict(state_dict, False)
-        #logger.info('Load pretrained model successfully!')
         return backbone
 
     def build_loss(self, config):
@@ -94,14 +58,6 @@ class FSBIDetector(AbstractDetector):
 
         loss_func = loss_class(**loss_kwargs)
         return loss_func
-
-    
-    # def features(self, data_dict: dict) -> torch.tensor:
-    #     landmarks = data_dict.get('landmark', None)
-    #     if landmarks is None:
-    #         return self.backbone.features(data_dict['image'])
-        
-    #     return self.backbone.features(data_dict['image'], landmarks)
 
     def features(self, data_dict: dict) -> torch.Tensor:
         landmarks = data_dict.get('landmark', None)

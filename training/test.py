@@ -25,7 +25,7 @@ import torch.nn.functional as F
 import torch.utils.data
 import torch.optim as optim
 
-from dataset.abstract_dataset_83 import DeepfakeAbstractBaseDataset_83
+from dataset.abstract_dataset import DeepfakeAbstractBaseDataset
 from dataset import CropImgDataset
 # from dataset.ff_blend import FFBlendDataset
 # from dataset.fwa_blend import FWABlendDataset
@@ -73,7 +73,7 @@ def prepare_testing_data(config):
             test_set = CropImgDataset(config=config, mode='test')
         
         else:
-            test_set = DeepfakeAbstractBaseDataset_83(
+            test_set = DeepfakeAbstractBaseDataset(
                 config=config,
                 mode='test', 
             )

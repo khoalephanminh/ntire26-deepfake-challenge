@@ -1,6 +1,19 @@
-# HCMUS-Aqua's Solution for NTIRE 2026 - Robust Deepfake Detection Challenge @ CVPR 2026
+# [4th Place NTIRE 2026] Robust Deepfake Detection: Mitigating Spatial Attention Drift via Calibrated Complementary Ensembles
+
+[![Paper](https://img.shields.io/badge/Paper-arXiv.org-B31B1B.svg)](https://arxiv.org/abs/2604.25889)
 
 🎉 **News: Our paper is accepted at CVPRW 2026!**
+
+<p align="center">
+  <img src="assets/model_arch.png" width="800" alt="Model Architecture">
+</p>
+<p align="center">
+  <em>Figure 1: Overview of our proposed method.</em>
+</p>
+
+> 🏆 **Ranked 4th in the NTIRE 2026 Robust Deepfake Detection Challenge @ CVPR 2026.**
+
+*Note: **HCMUS-Aqua** is our official team name representing the University of Science, VNU-HCM.*
 
 This repository contains the inference pipeline and ensemble code for our submission.
 

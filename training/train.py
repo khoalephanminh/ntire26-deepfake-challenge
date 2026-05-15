@@ -27,7 +27,7 @@ from logger import create_logger, RankFilter
 from dataset.noise_augment_wrapper import NoiseAugmentWrapper
 
 parser = argparse.ArgumentParser(description='Process some paths.')
-parser.add_argument('--detector_path', type=str, default='/data/home/zhiyuanyan/DeepfakeBenchv2/training/config/detector/sbi.yaml')
+parser.add_argument('--detector_path', type=str, default='./training/config/detector/dinov2_252.yaml')
 parser.add_argument("--train_dataset", nargs="+")
 parser.add_argument("--test_dataset", nargs="+")
 parser.add_argument('--no-save_ckpt', dest='save_ckpt', action='store_false', default=True)
@@ -37,17 +37,6 @@ parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
 parser.add_argument('--task_target', type=str, default="")
 args = parser.parse_args()
 torch.cuda.set_device(args.local_rank)
-
-def reserve_vram_gib(target_gib=40, safety_gib=2, device=0):
-    torch.cuda.set_device(device)
-    free, total = torch.cuda.mem_get_info()
-    target_bytes = int(max(0, (target_gib - safety_gib)) * (1024**3))
-    reserve = min(target_bytes, int(free * 0.95))  
-    if reserve <= 0: return None
-    guard = torch.empty(reserve, dtype=torch.uint8, device=f"cuda:{device}")
-    print(f"Reserved ~{reserve/1024**3:.1f} GiB on cuda:{device}")
-    import time; time.sleep(2)
-    del guard
 
 def init_seed(config):
     if config['manualSeed'] is None: config['manualSeed'] = random.randint(1, 10000)
@@ -314,7 +303,6 @@ def choose_scheduler(config, optimizer, total_steps=None):
 def choose_metric(config): return config['metric_scoring']
 
 def main():
-    reserve_vram_gib(target_gib=80, safety_gib=2, device=args.local_rank)
     with open(args.detector_path, 'r') as f: config = yaml.safe_load(f)
     with open('./training/config/train_config.yaml', 'r') as f: config2 = yaml.safe_load(f)
     if 'label_dict' in config: config2['label_dict']=config['label_dict']

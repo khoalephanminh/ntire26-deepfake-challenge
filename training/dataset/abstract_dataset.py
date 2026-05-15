@@ -18,7 +18,6 @@ from torchvision import transforms as T
 import albumentations as A
 
 from .albu import IsotropicResize
-from .fsbi_utils import get_dwt
 
 FFpp_pool=['FaceForensics++','FaceShifter','DeepFakeDetection','FF-DF','FF-F2F','FF-FS','FF-NT']
 
@@ -446,10 +445,6 @@ class DeepfakeAbstractBaseDataset(data.Dataset):
                 except Exception as e: return self.__getitem__(random.randint(0, len(self.data_dict['image']) - 1))
             else:
                 image_trans, landmarks_trans, mask_trans = deepcopy(image), deepcopy(landmarks), deepcopy(mask)
-            
-            if self.config['model_name'] == 'fsbi':
-                image_size = (self.config['resolution'], self.config['resolution'])
-                image_trans = get_dwt(image_trans, image_size)
 
             if not no_norm:
                 image_trans = self.normalize(self.to_tensor(image_trans))
