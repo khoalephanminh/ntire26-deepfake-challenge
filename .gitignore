@@ -20,6 +20,3 @@ gfpgan/
 misc/
 
 *.pth
-
-echo "training/pretrained/" >> .gitignore
-echo "*.tar" >> .gitignore
