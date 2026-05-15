@@ -1,4 +1,6 @@
-# NTIRE Deepfake Detection Challenge Submission
+# HCMUS-Aqua's Solution for NTIRE 2026 - Robust Deepfake Detection Challenge @ CVPR 2026
+
+🎉 **News: Our paper is accepted at CVPRW 2026!**
 
 This repository contains the inference pipeline and ensemble code for our submission.
 
@@ -7,7 +9,8 @@ This repository contains the inference pipeline and ensemble code for our submis
 2. [Data & Weights Preparation](#2-data--weights-preparation)
 3. [Running the Pipeline](#3-running-the-pipeline)
 4. [Output](#4-output)
-5. [Support](#5-support)
+5. [Acknowledgements](#5-acknowledgements)
+6. [Support](#6-support)
 
 ## 1. Environment Setup
 
@@ -90,7 +93,10 @@ CROPPED_DATASET="datasets/privatetest_data_final_cropped"  # Update this destina
 Upon successful completion, the final ensembled predictions will be generated at:
 `submissions/ensemble_public_test/submission.txt` (or your modified path)
 
-## 5. Support
+## 5. Acknowledgements
+Our codebase is inspired by the [DeepfakeBench](https://github.com/SCLBD/DeepfakeBench) framework. We thank the authors for their contribution to the community.
+
+## 6. Support
 
 If you encounter any issues reproducing the environment, running the scripts, or generating the final submission file, please email us at: **lpmkhoa22@apcs.fitus.edu.vn**
 
